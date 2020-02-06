@@ -1,3 +1,5 @@
+#include <Zumo32U4.h>
+
 #include <Wire.h>
 #include <Zumo32U4.h>
 
@@ -9,15 +11,19 @@ Zumo32U4ButtonA buttonA;
 Zumo32U4ButtonC buttonC;
 
 int standardCountSpeed = 2000 ;
-int count_1;
-int count_2;
+int count_1;int t_1;
+int count_2;int t_2;
+int count_3;int t_3;
+int count_4;int t_4;
+int t_Left;
+int t_Right;
 int index;
 int deltaCountSpeed;
 int error_CountSpeed;
 int output_Speed = 0;
 int integration_Error_CountSpeed = 0;
 int derivative_Error_CountSpeed;
-double K_p=0.1 , K_i=0.01, K_d=0.1;
+double K_p=0.1 , K_i=0, K_d=0.1;
 int indexCount= -1;
 int arr_errorCountSpeed[] ={0,0,0};
 double CountSpeed2Speed = 0.0889 ;
@@ -32,10 +38,37 @@ void setup() {
 
 void loop() {
   count_1 = encoders.getCountsLeft();
-  motors.setLeftSpeed(output_Speed);
-  delay(100);
+  t_1 = millis();
   count_2 = encoders.getCountsLeft();
-  deltaCountSpeed = (count_2 - count_1)*10;
+  t_2 = millis();
+  t_Left = t_1 - t_2;
+  motors.setLeftSpeed(speedControl(count_1, count_2, t_Left, standardCountSpeed));
+  
+  count_3 = encoders.getCountsLeft();
+  t_3 = millis();
+  count_4 = encoders.getCountsLeft();
+  t_4 = millis();
+  int t_Right = t_3 - t_4;
+  motors.setRightSpeed(speedControl(count_3, count_4, t_Right, standardCountSpeed));
+
+
+     // Clear the screen
+  lcd.clear();
+
+  // Go to the next line
+  lcd.gotoXY(0, 1);
+
+  // Print a number
+  lcd.print(output_Speed);
+  
+
+  
+}
+
+int speedControl(int count1, int count2, int Time, int standardCountSpeed)
+{
+  
+  deltaCountSpeed = (count_2 - count_1)/Time;
   /*actually we are calculating the count speed with the expression "(count_2 - count_1)/0.1", 
   we are doing the *10 here to avoid data type inconsistent issues*/
   
@@ -45,7 +78,7 @@ void loop() {
   index = indexCount + 1;// same as above
   arr_errorCountSpeed[index]= error_CountSpeed;
   
-  derivative_Error_CountSpeed = indexCount*(arr_errorCountSpeed[2]-arr_errorCountSpeed[0])*10;
+  derivative_Error_CountSpeed = indexCount*(arr_errorCountSpeed[2]-arr_errorCountSpeed[0])/Time;
    /*actually we are calculating the count speed with the expression "indexCount*(arr_errorCountSpeed[2]-arr_errorCountSpeed[0])/0.1", 
   we are doing the *10 here to avoid data type inconsistent issues*/
   
@@ -56,22 +89,7 @@ void loop() {
   
  
  Serial.println(output_Speed);
- 
-  motors.setLeftSpeed(output_Speed);
-  // put your main code here, to run repeatedly:
-
-
-
-   // Clear the screen
-  lcd.clear();
-
-  // Go to the next line
-  lcd.gotoXY(0, 1);
-
-  // Print a number
-  lcd.print(output_Speed);
-
-  
+  return output_Speed;
 }
 
 //1s ~ 4830 ~ 400 that is to say, maxSpeed = 4830 counts/s
