@@ -101,7 +101,8 @@ int speedControl(int count_1, int count_2, int Time, int standardCountSpeed)
   output_Speed += CountSpeed2Speed*( K_p*error_CountSpeed + K_i*(integration_Error_CountSpeed) + K_d*(derivative_Error_CountSpeed) );
   
  
- Serial.println(output_Speed);
+ Serial.println("deltaCountSpeed" + deltaCountSpeed);
+ Serial.println("output_Speed" + output_Speed);
   return output_Speed;
 }
 
