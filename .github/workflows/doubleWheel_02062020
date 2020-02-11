@@ -21,6 +21,7 @@ int t_Right;
 int index;
 int deltaCountSpeed;
 int error_CountSpeed;
+int output_Speed;
 int output_Speed_Left = 0;
 int output_Speed_Right = 0;
 int integration_Error_CountSpeed = 0;
@@ -76,7 +77,7 @@ void loop() {
   
 }
 
-int speedControl(int count1, int count2, int Time, int standardCountSpeed)
+int speedControl(int count_1, int count_2, int Time, int standardCountSpeed)
 {
   
   deltaCountSpeed = (count_2 - count_1)/Time;
