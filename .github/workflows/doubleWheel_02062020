@@ -10,13 +10,14 @@ Zumo32U4Motors motors;
 Zumo32U4ButtonA buttonA;
 Zumo32U4ButtonC buttonC;
 
-int standardCountSpeed = 2000 ;
-int count_1;int t_1;
-int count_2;int t_2;
-int count_3;int t_3;
-int count_4;int t_4;
+int standardCountSpeed = 2000 ;// the idea volecity in unit of counts/sec
+int count_Left_1;
+int count_Left_2;
+int count_Right_1;
+int count_Right_2;
 int t_Left;
 int t_Right;
+// time interval for the calculation of volecity,in units of ms
 int index;
 int deltaCountSpeed;
 int error_CountSpeed;
@@ -36,20 +37,22 @@ void setup() {
 
 }
 
+// the basic idea is test volecity for both left and right wheels at the same time
+// so that there will be no time intervals between every two execution of PID control.
 void loop() {
-  count_1 = encoders.getCountsLeft();
-  t_1 = millis();
-  count_2 = encoders.getCountsLeft();
-  t_2 = millis();
-  t_Left = t_1 - t_2;
-  motors.setLeftSpeed(speedControl(count_1, count_2, t_Left, standardCountSpeed));
-  
-  count_3 = encoders.getCountsLeft();
-  t_3 = millis();
-  count_4 = encoders.getCountsLeft();
-  t_4 = millis();
-  int t_Right = t_3 - t_4;
-  motors.setRightSpeed(speedControl(count_3, count_4, t_Right, standardCountSpeed));
+  count_Left_1 = encoders.getCountsLeft();
+  count_Right_1 = encoders.getCountsRight();
+  //test the count for both right/left wheels
+  delay(100);
+  //wait 100ms for the second test for both of the left/right wheels.
+  count_Left_2 = encoders.getCountsLeft();
+  count_Right_2 = encoders.getCountsRight();
+  //test the count again for both right/left wheels
+  t_Left = 0.1;
+  t_Right = 0.1;
+  // delta t for calculating both left/right wheels' volecity
+  motors.setLeftSpeed(speedControl(count_Left_1, count_Left_2, t_Left, standardCountSpeed));
+  motors.setRightSpeed(speedControl(count_Right_1, count_Right_2, t_Right, standardCountSpeed));
 
 
      // Clear the screen
