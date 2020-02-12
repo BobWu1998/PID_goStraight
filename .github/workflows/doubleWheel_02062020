@@ -15,8 +15,9 @@ int count_Left_1;
 int count_Left_2;
 int count_Right_1;
 int count_Right_2;
-int t_Left;
-int t_Right;
+// delta t for calculating both left/right wheels' volecity
+double TIME = 0.1;
+
 // time interval for the calculation of volecity,in units of ms
 int index;
 int deltaCountSpeed;
@@ -51,12 +52,14 @@ void loop() {
   count_Left_2 = encoders.getCountsLeft();
   count_Right_2 = encoders.getCountsRight();
   //test the count again for both right/left wheels
-  t_Left = 0.1;
-  t_Right = 0.1;
-  // delta t for calculating both left/right wheels' volecity
+  Serial.println(count_Left_1);
+  Serial.println(count_Left_2);
+  Serial.println("       ");
+ 
   
-  output_Speed_Left = speedControl(count_Left_1, count_Left_2, t_Left, standardCountSpeed);
-  output_Speed_Right = speedControl(count_Right_1, count_Right_2, t_Right, standardCountSpeed);
+  
+  output_Speed_Left = speedControl(count_Left_1, count_Left_2, TIME, standardCountSpeed);
+  output_Speed_Right = speedControl(count_Right_1, count_Right_2, TIME, standardCountSpeed);
   
   motors.setLeftSpeed(output_Speed_Left);
   motors.setRightSpeed(output_Speed_Right);
@@ -78,8 +81,9 @@ void loop() {
   
 }
 
-int speedControl(int count_1, int count_2, int Time, int standardCountSpeed)
+int speedControl(int count_1, int count_2, double Time, int standardCountSpeed)
 {
+  
   
   deltaCountSpeed = (count_2 - count_1)/Time;
   /*actually we are calculating the count speed with the expression "(count_2 - count_1)/0.1", 
@@ -101,8 +105,8 @@ int speedControl(int count_1, int count_2, int Time, int standardCountSpeed)
   output_Speed += CountSpeed2Speed*( K_p*error_CountSpeed + K_i*(integration_Error_CountSpeed) + K_d*(derivative_Error_CountSpeed) );
   
  
- Serial.println("deltaCountSpeed" + deltaCountSpeed);
- Serial.println("output_Speed" + output_Speed);
+
+
   return output_Speed;
 }
 
