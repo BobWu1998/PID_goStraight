@@ -108,6 +108,7 @@ int speedControl(int count_1, int count_2, double Time, int standardCountSpeed)
 
 
   return output_Speed;
+  
 }
 
 //1s ~ 4830 ~ 400 that is to say, maxSpeed = 4830 counts/s
