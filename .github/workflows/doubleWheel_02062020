@@ -17,6 +17,7 @@ int count_Right_1;
 int count_Right_2;
 // delta t for calculating both left/right wheels' volecity
 double TIME = 0.1;
+unsigned long startTime;
 
 // time interval for the calculation of volecity,in units of ms
 int index;
@@ -27,16 +28,18 @@ int output_Speed_Left = 0;
 int output_Speed_Right = 0;
 int integration_Error_CountSpeed = 0;
 int derivative_Error_CountSpeed;
-double K_p=0.1 , K_i=0.1, K_d=0.1;
+double K_p=0.3, K_i=0, K_d=0.05;
 int indexCount= -1;
 int arr_errorCountSpeed[] ={0,0,0};
 double CountSpeed2Speed = 0.0889 ;
+
+
 void setup() {
   //motor.setLeftSpeed(300);
-  delay(1000);
   //motor.setRightSpeed(300);
   // put your setup code here, to run once:
   buttonA.waitForButton();
+  startTime = millis();
   Serial.begin(2000000);
 
 }
@@ -52,17 +55,32 @@ void loop() {
   count_Left_2 = encoders.getCountsLeft();
   count_Right_2 = encoders.getCountsRight();
   //test the count again for both right/left wheels
-  Serial.println(count_Left_1);
-  Serial.println(count_Left_2);
-  Serial.println("       ");
+//  Serial.println(count_Left_1);
+//  Serial.println(count_Left_2);
+//  Serial.println("       ");
  
   
   
   output_Speed_Left = speedControl(count_Left_1, count_Left_2, TIME, standardCountSpeed);
   output_Speed_Right = speedControl(count_Right_1, count_Right_2, TIME, standardCountSpeed);
   
-  motors.setLeftSpeed(output_Speed_Left);
+
+
+
+  if((millis()-startTime) > 2000)
+  {
+   Serial.print("time!");
+   motors.setLeftSpeed(0);
+   motors.setRightSpeed(0);
+  }
+  else
+  {  
+  motors.setLeftSpeed(output_Speed_Left+10);
   motors.setRightSpeed(output_Speed_Right);
+  }
+
+
+
 
 
      // Clear the screen
@@ -108,7 +126,6 @@ int speedControl(int count_1, int count_2, double Time, int standardCountSpeed)
 
 
   return output_Speed;
-  
 }
 
 //1s ~ 4830 ~ 400 that is to say, maxSpeed = 4830 counts/s
